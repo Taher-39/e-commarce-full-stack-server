@@ -28,6 +28,14 @@ client.connect(err => {
                 res.send(result.insertedCount > 0)
             })
     })
+    //post for checkout
+    // app.post('/checkout', (req, res) => {
+    //     const newCheckout = req.body;
+    //     productCollection.insertOne(newCheckout)
+    //     .then(result => {
+    //         res.send(result.insertedCount > 0);
+    //     })
+    // })
     //read
     app.get("/products", (req, res) => {
         productCollection.find()
@@ -35,7 +43,20 @@ client.connect(err => {
                 res.send(document)
             })
     })
-
+    //read by id
+    app.get('/product/:id', (req, res) =>{
+        productCollection.find({ _id: ObjectId(req.params.id)})
+        .toArray((err, document) => {
+            res.send(document[0])
+        })
+    })
+    //read by email
+    // app.get('/orders', (req, res) => {
+    //     productCollection.find({ email: req.query.email })
+    //     .toArray((err, document) => {
+    //         res.send(document)
+    //     })
+    // })
 });
 
 app.listen(port)
