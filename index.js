@@ -20,6 +20,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 client.connect(err => {
     const productCollection = client.db("HatBazar").collection("product");
+    const checkoutCollection = client.db("HatBazar").collection("checkout");
     //post 
     app.post('/addProduct', (req, res) => {
         const newProduct = req.body;
@@ -29,13 +30,13 @@ client.connect(err => {
             })
     })
     //post for checkout
-    // app.post('/checkout', (req, res) => {
-    //     const newCheckout = req.body;
-    //     productCollection.insertOne(newCheckout)
-    //     .then(result => {
-    //         res.send(result.insertedCount > 0);
-    //     })
-    // })
+    app.post('/productCheckout', (req, res) => {
+        const newCheckout = req.body;
+        checkoutCollection.insertOne(newCheckout)
+        .then(result => {
+            res.send(result.insertedCount > 0);
+        })
+    })
     //read
     app.get("/products", (req, res) => {
         productCollection.find()
@@ -51,12 +52,19 @@ client.connect(err => {
         })
     })
     //read by email
-    // app.get('/orders', (req, res) => {
-    //     productCollection.find({ email: req.query.email })
-    //     .toArray((err, document) => {
-    //         res.send(document)
-    //     })
-    // })
+    app.get('/orders', (req, res) => {
+        checkoutCollection.find({email: req.query.email})
+        .toArray((err, document) => {
+            res.send(document)
+        })
+    })
+    //delete item 
+    app.delete('/delete/:id', (req, res) => {
+        productCollection.deleteOne({ _id: ObjectId(req.params.id) })
+            .then((result) => {
+                res.send(result.deletedCount > 0)
+            })
+    })
 });
 
 app.listen(port)
